@@ -10,7 +10,6 @@ from urllib.parse import urlparse
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 from pytgcalls.types import MediaStream
-from pytgcalls.exceptions import PyTgCallsError
 
 from telegram import Update, BotCommand
 from telegram.ext import (
