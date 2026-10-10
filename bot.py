@@ -23,6 +23,14 @@ from telegram.ext import (
 )
 
 from pyrogram import Client
+import pyrogram.errors
+
+if not hasattr(pyrogram.errors, "GroupcallForbidden"):
+    pyrogram.errors.GroupcallForbidden = getattr(
+        pyrogram.errors,
+        "GroupCallForbidden",
+        type("GroupcallForbidden", (Exception,), {})
+    )
 from pytgcalls import PyTgCalls
 from pytgcalls.types import MediaStream
 
