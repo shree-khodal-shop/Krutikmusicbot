@@ -4,3 +4,4 @@ py-tgcalls==0.9.7
 yt-dlp==2023.12.30
 aiohttp==3.9.3
 python-dotenv==1.0.1
+aiosqlite==0.19.0
