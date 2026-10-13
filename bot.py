@@ -34,7 +34,7 @@ BANNED_GROUPS = set()
 QUEUES = {}  
 CURRENT_SONG = {}  
 
-# yt-dlp options with Cookies and Client Bypass support
+# yt-dlp options with Web Client & Cookies Support
 YDL_OPTIONS = {
     'format': 'bestaudio/best',
     'noplaylist': True,
@@ -42,8 +42,9 @@ YDL_OPTIONS = {
     'extractaudio': True,
     'outtmpl': 'downloads/%(id)s.%(ext)s',
     'cookiefile': 'cookies.txt',
-    'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
+    'extractor_args': {'youtube': {'player_client': ['web']}},
 }
+
 
 # ================= START & HELPER COMMANDS =================
 
