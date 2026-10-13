@@ -35,8 +35,9 @@ QUEUES = {}
 CURRENT_SONG = {}  
 
 # yt-dlp options with Web Client & Cookies Support
+# yt-dlp options with stable format and web client bypass
 YDL_OPTIONS = {
-    'format': 'bestaudio/best',
+    'format': 'bestaudio',
     'noplaylist': True,
     'quiet': True,
     'extractaudio': True,
@@ -44,6 +45,7 @@ YDL_OPTIONS = {
     'cookiefile': 'cookies.txt',
     'extractor_args': {'youtube': {'player_client': ['web']}},
 }
+
 
 
 # ================= START & HELPER COMMANDS =================
@@ -54,7 +56,7 @@ async def start_handler(client, message: Message):
         return await message.reply(f"⚠️ **Bot currently maintenance mode par off hai!**{BRANDING}")
     
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🔥 Developer", url="https://t.me/your_username")],
+        [InlineKeyboardButton("🔥 Developer", url="https://t.me/KRUTIK_BHAI")],
         [InlineKeyboardButton("🎵 Add Me To Your Group", url=f"https://t.me/{client.me.username}?startgroup=true")]
     ])
     await message.reply(
