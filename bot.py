@@ -10,7 +10,7 @@ from pytgcalls.types import AudioPiped
 API_ID = int(os.getenv("API_ID", "123456"))  # Apni API ID dalein
 API_HASH = os.getenv("API_HASH", "your_api_hash")  # Apna API Hash dalein
 BOT_TOKEN = os.getenv("BOT_TOKEN", "your_bot_token")  # Bot Token dalein
-SESSION_STRING = os.getenv("STRING_STRING", "")  # Optional: Agar ho toh theek, warna interactive login hoga
+STRING_SESSION = os.getenv("STRING_SESSION", "")  # Optional: Agar ho toh theek, warna interactive login hoga
 ADMIN_IDS = [int(x) for x in os.getenv("ADMIN_IDS", "123456789").split(",")]  # Admin Telegram IDs
 
 # Branding footer
@@ -19,9 +19,9 @@ BRANDING = "\n\n⚡ **Powered by: KRUTIK CYBER DEVELOPER**"
 # Initialize Bot Client
 app = Client("KrutikMusicBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# Initialize Userbot Client (Agar STRING_STRING nahi hai, toh Pyrogram khud terminal par Phone & OTP maangega)
-if SESSION_STRING:
-    userbot = Client("KrutikUserBot", api_id=API_ID, api_hash=API_HASH, session_string=SESSION_STRING)
+# Initialize Userbot Client (Interactive Phone & OTP fallback included)
+if STRING_SESSION:
+    userbot = Client("KrutikUserBot", api_id=API_ID, api_hash=API_HASH, session_string=STRING_SESSION)
 else:
     print("⚠️ STRING_SESSION nahi mila! Kripya terminal par apna Phone Number aur OTP darj karein...")
     userbot = Client("KrutikUserBot", api_id=API_ID, api_hash=API_HASH)
@@ -34,13 +34,14 @@ BANNED_GROUPS = set()
 QUEUES = {}  
 CURRENT_SONG = {}  
 
-# yt-dlp options for audio download
+# yt-dlp options with Cookies support for YouTube bypass
 YDL_OPTIONS = {
     'format': 'bestaudio/best',
     'noplaylist': True,
     'quiet': True,
     'extractaudio': True,
     'outtmpl': 'downloads/%(id)s.%(ext)s',
+    'cookiefile': 'cookies.txt',  # YouTube bot verification bypass cookies
 }
 
 # ================= START & HELPER COMMANDS =================
@@ -170,7 +171,7 @@ async def play_music(client, message: Message):
         return await message.reply(f"⚠️ Kripya gaane ka naam ya URL dein. Usage: `/play [Song Name/URL]`{BRANDING}")
 
     query = " ".join(message.command[1:])
-    status_msg = await message.reply(f"🔍 **Searching & Downloading:** `{query}`... Kripya intezaar karein!{BRANDING}")
+    status_msg = await message.reply(f"🔍 **Searching & Downloading:** `{query}`... Kripya intezaار karein!{BRANDING}")
 
     try:
         file_path, title, duration, thumbnail, webpage_url = await download_audio(query)
