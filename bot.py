@@ -36,15 +36,16 @@ CURRENT_SONG = {}
 
 # yt-dlp options with Web Client & Cookies Support
 # yt-dlp options with stable format and web client bypass
+# yt-dlp options with flexible audio format and cookies support
 YDL_OPTIONS = {
-    'format': 'bestaudio',
+    'format': 'bestaudio[ext=m4a]/bestaudio/best',
     'noplaylist': True,
     'quiet': True,
     'extractaudio': True,
     'outtmpl': 'downloads/%(id)s.%(ext)s',
     'cookiefile': 'cookies.txt',
-    'extractor_args': {'youtube': {'player_client': ['web']}},
 }
+
 
 
 
