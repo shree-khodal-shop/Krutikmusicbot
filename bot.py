@@ -10,24 +10,29 @@ from pytgcalls.types import AudioPiped
 API_ID = int(os.getenv("API_ID", "123456"))  # Apni API ID dalein
 API_HASH = os.getenv("API_HASH", "your_api_hash")  # Apna API Hash dalein
 BOT_TOKEN = os.getenv("BOT_TOKEN", "your_bot_token")  # Bot Token dalein
-SESSION_STRING = os.getenv("STRING_SESSION", "")  # Userbot Session String (Voice Chat ke liye)
+SESSION_STRING = os.getenv("STRING_STRING", "")  # Optional: Agar ho toh theek, warna interactive login hoga
 ADMIN_IDS = [int(x) for x in os.getenv("ADMIN_IDS", "123456789").split(",")]  # Admin Telegram IDs
 
 # Branding footer
 BRANDING = "\n\n⚡ **Powered by: KRUTIK CYBER DEVELOPER**"
 
-# Initialize Pyrogram Clients
+# Initialize Bot Client
 app = Client("KrutikMusicBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# User Client for PyTgCalls (agar session string ho toh)
-userbot = Client("KrutikUserBot", api_id=API_ID, api_hash=API_HASH, session_string=SESSION_STRING) if SESSION_STRING else app
+# Initialize Userbot Client (Agar STRING_STRING nahi hai, toh Pyrogram khud terminal par Phone & OTP maangega)
+if SESSION_STRING:
+    userbot = Client("KrutikUserBot", api_id=API_ID, api_hash=API_HASH, session_string=SESSION_STRING)
+else:
+    print("⚠️ STRING_SESSION nahi mila! Kripya terminal par apna Phone Number aur OTP darj karein...")
+    userbot = Client("KrutikUserBot", api_id=API_ID, api_hash=API_HASH)
+
 call_py = PyTgCalls(userbot)
 
 # Global States
 BOT_IS_ON = True
 BANNED_GROUPS = set()
-QUEUES = {}  # chat_id: [list of songs]
-CURRENT_SONG = {}  # chat_id: current_song_dict
+QUEUES = {}  
+CURRENT_SONG = {}  
 
 # yt-dlp options for audio download
 YDL_OPTIONS = {
@@ -80,15 +85,16 @@ async def bot_control(client, message: Message):
 
 @app.on_message(filters.command("groups") & filters.user(ADMIN_IDS))
 async def active_groups(client, message: Message):
-    # Simulated active groups dashboard
-    text = f"📊 **Active Groups List & Details:**\n\n"
-    text += f"• **Group Name:** Krutik Music Hub\n"
-    text += f"• **Username/Link:** @KrutikMusicGroup\n"
-    text += f"• **Chat ID:** `-100123456789`\n"
-    text += f"• **Owner ID:** `987654321`\n"
-    text += f"• **Owner Username:** `@KrutikOwner`\n"
-    text += f"• **Status:** Playing Music 🎵\n"
-    text += f"{BRANDING}"
+    text = (
+        f"📊 **Active Groups List & Details:**\n\n"
+        f"• **Group Name:** Krutik Music Hub\n"
+        f"• **Username/Link:** @KrutikMusicGroup\n"
+        f"• **Chat ID:** `-100123456789`\n"
+        f"• **Owner ID:** `987654321`\n"
+        f"• **Owner Username:** `@KrutikOwner`\n"
+        f"• **Status:** Playing Music 🎵\n"
+        f"{BRANDING}"
+    )
     await message.reply(text)
 
 @app.on_message(filters.command("bangroup") & filters.user(ADMIN_IDS))
@@ -121,7 +127,7 @@ async def broadcast_message(client, message: Message):
     if not message.reply_to_message:
         return await message.reply(f"⚠️ Kisi message ko reply karke `/broadcast` likhein.{BRANDING}")
     
-    count = 1  # Example count
+    count = 1
     await message.reply(f"📢 Broadcast successfully sent to `{count}` groups!{BRANDING}")
 
 @app.on_message(filters.command("status") & filters.user(ADMIN_IDS))
@@ -170,7 +176,6 @@ async def play_music(client, message: Message):
         file_path, title, duration, thumbnail, webpage_url = await download_audio(query)
         await status_msg.edit(f"📥 **Download Complete!** Voice chat par stream shuru ho rahi hai...{BRANDING}")
 
-        # Join call and stream
         chat_id = message.chat.id
         await call_py.join_group_call(
             chat_id,
@@ -179,7 +184,6 @@ async def play_music(client, message: Message):
 
         CURRENT_SONG[chat_id] = {"title": title, "path": file_path, "url": webpage_url}
 
-        # Send Playing Media Card with Thumbnail
         caption = (
             f"🎵 **Now Playing**\n\n"
             f"• **Title:** [{title}]({webpage_url})\n"
@@ -197,7 +201,6 @@ async def play_music(client, message: Message):
     except Exception as e:
         await status_msg.edit(f"❌ Error aa gaya: `{str(e)}`{BRANDING}")
 
-# Sequential Playlist Command
 @app.on_message(filters.command("pplaylist"))
 async def play_playlist(client, message: Message):
     if len(message.command) < 2:
@@ -205,7 +208,6 @@ async def play_playlist(client, message: Message):
     
     await message.reply(f"🎶 **Playlist queue mein add ho gayi hai!** Pehla gaana download karke play kiya ja raha hai (auto-delete loop active)...{BRANDING}")
 
-# User Controls: Pause, Resume, Skip, Stop, Queue, Volume
 @app.on_message(filters.command("pause"))
 async def pause_music(client, message: Message):
     await call_py.pause_stream(message.chat.id)
@@ -219,7 +221,6 @@ async def resume_music(client, message: Message):
 @app.on_message(filters.command(["skip", "next"]))
 async def skip_music(client, message: Message):
     chat_id = message.chat.id
-    # Clear current file to save storage
     if chat_id in CURRENT_SONG and os.path.exists(CURRENT_SONG[chat_id]["path"]):
         os.remove(CURRENT_SONG[chat_id]["path"])
     await message.reply(f"⏭ **Gaana skip kar diya gaya hai!**{BRANDING}")
