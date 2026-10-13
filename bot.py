@@ -34,15 +34,17 @@ BANNED_GROUPS = set()
 QUEUES = {}  
 CURRENT_SONG = {}  
 
-# yt-dlp options with Cookies support for YouTube bypass
+# yt-dlp options with Cookies and Client Bypass support
 YDL_OPTIONS = {
     'format': 'bestaudio/best',
     'noplaylist': True,
     'quiet': True,
     'extractaudio': True,
     'outtmpl': 'downloads/%(id)s.%(ext)s',
-    'cookiefile': 'cookies.txt',  # YouTube bot verification bypass cookies
+    'cookiefile': 'cookies.txt',
+    'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
 }
+
 
 # ================= START & HELPER COMMANDS =================
 
