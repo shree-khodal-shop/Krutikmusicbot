@@ -2,7 +2,8 @@ import os
 import asyncio
 from pyrogram import Client, filters, idle
 from pytgcalls import PyTgCalls
-from pytgcalls.types import AudioPiped
+# Naye pytgcalls version ke liye import fix
+from pytgcalls.types.input_stream import AudioPiped
 import yt_dlp
 
 # Environment variables se credentials lena
